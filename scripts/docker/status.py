@@ -16,7 +16,10 @@ SUPPORTED_TYPES = [
 
 def status(arguments: List[str]) -> int:
     def command(_args, _type):
-        return f"docker {_type} ls -f name={common.PROJECT_PREFIX} {' '.join(_args)}"
+        base_cmd = f'docker {_type} ls'
+
+        return f"{base_cmd} -f name={common.PROJECT_PREFIX} {' '.join(_args)}" \
+            if _type != 'image' else base_cmd
 
     code: int = 0
 

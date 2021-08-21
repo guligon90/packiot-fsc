@@ -3,7 +3,8 @@ import os
 from typing import List, Optional
 
 # Project imports
-from docker.common import DatabaseConfig, must_have_db_credentials, PROJECT_HOME
+from docker.common import PROJECT_HOME
+from docker.config.db import DBCONFIG
 from docker.run import run_local
 
 
@@ -31,16 +32,17 @@ def dump_file(db_name: str) -> str:
     return os.path.join(PROJECT_HOME, f'{db_name}.dump')
 
 
+@DBCONFIG.must_have_db_credentials
 def dump(arguments: Optional[List[str]]) -> int:
 
     dump_command = f'''
-    PGPASSWORD="{DatabaseConfig.PASSWORD}" \\
+    PGPASSWORD="{DBCONFIG.PASSWORD}" \\
     pg_dump \\
-        -U {DatabaseConfig.USER.value} \\
+        -U {DBCONFIG.USERNAME} \\
         -h localhost \\
-        -p {DatabaseConfig.PORT.value} \\
-        {DatabaseConfig.NAME.value} \\
-        -f {dump_file(DatabaseConfig.NAME.value)} \\
+        -p {DBCONFIG.PORT} \\
+        {DBCONFIG.NAME} \\
+        -f {dump_file(DBCONFIG.NAME)} \\
         -Fc \\
         -Z 9 \\
         --no-owner \\
@@ -48,7 +50,7 @@ def dump(arguments: Optional[List[str]]) -> int:
         --verbose
     '''
 
-    print(f">>>>>>>>>> Dumping data from DB {DatabaseConfig.NAME.value} <<<<<<<<<<")
+    print(f">>>>>>>>>> Dumping data from DB {DBCONFIG.NAME} <<<<<<<<<<")
 
     if arguments:
         dump_command += ' '.join(arguments)
@@ -56,18 +58,19 @@ def dump(arguments: Optional[List[str]]) -> int:
     return run_local(dump_command)
 
 
+@DBCONFIG.must_have_db_credentials
 def load(arguments: Optional[List[str]]) -> int:
-    db_name = DatabaseConfig.NAME.value
+    db_name = DBCONFIG.NAME
 
     load_command = f'''
-    PGPASSWORD={DatabaseConfig.PASSWORD.value} \\
+    PGPASSWORD={DBCONFIG.PASSWORD} \\
     pg_restore \\
         -Fc \\
-        -U {DatabaseConfig.USER.value} \\
-        -h {DatabaseConfig.HOST.value} \\
-        -p {DatabaseConfig.PORT.value} \\
+        -U {DBCONFIG.USERNAME} \\
+        -h {DBCONFIG.PGHOST} \\
+        -p {DBCONFIG.PORT} \\
         --no-owner \\
-        --role={DatabaseConfig.USER.value} \\
+        --role={DBCONFIG.USERNAME} \\
         -d {db_name} < {dump_file(db_name)} \\
         --verbose
     '''
@@ -80,17 +83,17 @@ def load(arguments: Optional[List[str]]) -> int:
     return run_local(load_command)
 
 
-@must_have_db_credentials
+@DBCONFIG.must_have_db_credentials
 def createtables(arguments: Optional[List[str]] = None) -> int:
-    db_name = DatabaseConfig.NAME.value
+    db_name = DBCONFIG.NAME
 
     creation_cmd = f'''
     docker exec \\
         -it pgsqlserver-ctnr \\
         sh -c " \\
-        PGPASSWORD={DatabaseConfig.PASSWORD.value} \\
+        PGPASSWORD={DBCONFIG.PASSWORD} \\
         psql \\
-            -U {DatabaseConfig.USER.value} \\
+            -U {DBCONFIG.USERNAME} \\
             -d {db_name} \\
             -f /ddl-stmts.sql \\
         "
@@ -105,20 +108,17 @@ def createtables(arguments: Optional[List[str]] = None) -> int:
 
 
 def dropdb(arguments: Optional[List[str]] = None) -> int:
-    db_name = DatabaseConfig.NAME.value
+    db_name = DBCONFIG.NAME
 
     creation_cmd = f'''
     docker exec \\
         -it pgsqlserver-ctnr \\
         sh -c " \\
         dropdb \\
-            {db_name} \\
+            {DBCONFIG.NAME} \\
             --if-exists \\
         "
     '''
-
-    # -U {DatabaseConfig.USER.value} \\
-    # -w {DatabaseConfig.PASSWORD.value} \\
 
     print(f">>>>>>>>>> Dropping DB {db_name} <<<<<<<<<<")
 

@@ -63,4 +63,10 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        sys.exit(0)
+    except Exception as exc:
+        print(f'{exc.__class__.__name__}: {str(exc)}')
+        sys.exit(-1)
