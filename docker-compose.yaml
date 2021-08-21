@@ -6,12 +6,12 @@ services:
     container_name: pgsqlserver-ctnr
     image: pgsqlserver-img
     build:
-      context: ./database/
+      context: ./database/postgresql
       dockerfile: ./docker/Dockerfile
       args:
         - TZ=America/Sao_Paulo
     env_file:
-      - ./database/docker/.pgsql.env
+      - ./database/postgresql/docker/.pgsql.env
     volumes:
       - type: volume
         source: pgsql_server_data
@@ -22,8 +22,23 @@ services:
     networks:
       - packiot-fsc-network
 
+  # pgAdmin4 instance, for better data manipulation
+  pgadmin:
+    container_name: pgadmin-ctnr
+    image: dpage/pgadmin4
+    env_file:
+      - ./database/pgadmin/docker/.pgadmin.env
+    ports:
+      - target: 80
+        published: 15432 
+    depends_on:
+      - pgsqlserver
+    networks:
+      - packiot-fsc-network
+
 networks:
   packiot-fsc-network:
+    driver: bridge
 
 volumes:
   pgsql_server_data:
