@@ -15,12 +15,8 @@ function create_user_and_database() {
 EOSQL
 }
 
-if [ -n "$DATABASE_CSL" ]; then
-    echo "Multiple database creation requested: $DATABASE_CSL"
-    
-    for db in $(echo $DATABASE_CSL | tr ',' ' '); do
-        create_user_and_database $db
-    done
-    
-    echo "Multiple databases created"
+if [ -n "$DATABASE" ]; then
+    echo "Creating database: $DATABASE"
+    create_user_and_database $DATABASE
+    echo "Done"
 fi
