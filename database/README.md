@@ -1,59 +1,44 @@
-# Bioview Admin :: Servico local PostgreSQL
-## Preliminares
+# PackIOT FSC :: Database
 
-Evidentemente, para que o dumping e restoring funcionem, é necessário que os serviços `cloudsqlproxyneopct` e `cloudsqlproxysysviz`,
-já estejam rodando, pois é através desses serviços que o script de dump realiza a conexão com os bancos de dados.
-Na mesma ordem de idéias, o serviço local de banco de dados, `devpgserver`, que contém os bancos de dados para
-desenvolvimento, também deverá estar iniciado.
+<!-- TOC -->
+## 0. Table of contents
 
-Na raiz do projeto, executar:
-```bash
-$ ./scripts/devenv.py build devpgserver | cloudsqlproxyneopct | cloudsqlproxyneopct # build da imagem
-$ ./scripts/devenv.py start devpgserver | cloudsqlproxyneopct | cloudsqlproxyneopct # execução do contâiner
-$ ./scripts/devenv.py logs devpgserver | cloudsqlproxyneopct | cloudsqlproxyneopct # logs do contâiner
-```
+- [1. Introduction](#1-introduction)
+- [2. Modelling](#2-modelling)
+- [3. Implementation](#3-implementation)
+- [4. Possible improvements](#4-possible-improvements)
+- [5. Where to now?](#5-where-to-now)
+    
+<!-- /TOC -->
+## 1. Introduction
 
-## SQL Dumping:
+In the context of a hypothetical factory floor, the scope of the challenge is to build a database structure that is capable of storing the number of parts produced, by different machines.
 
-Na raiz do projeto, executar:
-```bash
-$ ./scripts/devenv.py dump [db_user] [db_name] [db_password]
-```
+The following are the business domain requirements, associated to the features that this persistence layer must have:
 
-Espere o dump ser concluído. Se tudo ocorrer bem, na raíz do projeto, será criado um arquivo cujo nome tem o formato `{db_name}.dump`.
-Esse arquivo será usado depois pelo script de restore.
+* Each machine has **one** counter to store the production of parts to support reports by period;
+* Each machine has **one or more** shifts working per day, starting and ending everyday at the **same time**, on **all days** of the week;
+* Counter value is incremental on the source. A new value is added to the table every one minute. So, for each counter, the respective table has the reading on the source for the respective time when it was read, which can be higher than the previous value, or not, if there was no change;
+* Counter can be reset back to zero at any time at the source and we do not have control over it;
+* Due to the behavior on the pipeline connecting the source to the database, a counter reading might not arrive sorted by timestamp, which means, you can expect to receive readings that are older than the most recent reading for a given counter.
+## 2. Modelling
 
-## Restoring:
+With the specification in hand, we can now go to the entity modelling stage. The result of this is representated below by an entity-relationship diagram (ERD), in a more conceptual form, using [Chen's notation](https://en.wikipedia.org/wiki/Entity%E2%80%93relationship_model):
 
-Com o dumping completo, executar no terminal:
-```bash
-$ ./scripts/devenv.py dump [db_name]
-```
+![screenshot](../resources/img/erd-1.png)
 
-## Apontamentos no servidor de aplicação
+## 3. Implementation
 
-Com os bancos de dados remotos restaurados localmente, é hora agora de fazer com que o contâiner do servidor de aplicação
-consuma esses BDs. No [arquivo de variáveis de ambiente](../backend/docker/.neobiomeadmin.dev.env) do serviço `neobiomeadmin`,
-por exemplo, assumindo um usuário e senha locais do PostgreSQL, os apontamentos para o DB do Neobiome Admin (proveninente do
-servidor teste) ficariam como:
+Before going straight to the implementation aspects, is presented below an alternative version of the previous ERD, with emphasis to the physical structure of the tables that will compose the database:
 
-```bash
-# Nomes dos BDs
-NEOBIOME_ADMIN_DB_NAME=bioviewadmindb
-NEOAPI_DB_NAME=neoapidb
-SYSVIZ_DB_NAME=sysvizdb
+![screenshot](../resources/img/erd-2.png)
 
-# Credenciais unificadas (todos os BDs em um contâiner)
-PGSQL_HOST=devpgserver
-PGSQL_PORT=5433
-PGSQL_USER=devuser
-PGSQL_PASSWORD=devuser
+Note that the types of each attribute are in accordance with the SQL type system that the PostgreSQL v11 supports.
 
-# ...
-```
-## Navegação
+## 4. Possible improvements
 
-* ["Raíz"](../../../README.md)
-* ["Scripts"](../../../scripts/README.md)
-* ["Cloud SQL proxies"](../cloudsqlproxy/README.md)
-* ["Servidor de aplicação"](../../backend/README.md)
+## 5. Where to now?
+
+* [Root](../README.md)
+* [Scripts](../scripts/README.md) 
+* [Table of contents](#0-table-of-contents)
