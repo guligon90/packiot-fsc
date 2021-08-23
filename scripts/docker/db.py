@@ -1,128 +1,72 @@
 # Base imports
-import os
-from typing import List, Optional
+from typing import List, Optional, Text
 
 # Project imports
-from docker.common import PROJECT_HOME
+from docker.common import usage
 from docker.config.db import DBCONFIG
 from docker.run import run_local
 
 
-DUMP_USAGE_TEXT = '''
-docker.db_data.dump:
-    Dumps the database content in a .dump file, given valid credentials.
+DB_USAGE_TEXT = '''
+docker.db.db_action
+Runs actions over the packiotfscdb database.
 
 Usage:
-    $ ./scripts/devenv.py dump
-    $ python /scripts/devenv.py dump
+    $ ./scripts/devenv.py db [action] [resource]
+    $ python ./scripts/devenv.py db [action] [resource]
+
+Where:
+    action: create | load
+    resource: tables | data
 '''
 
 
-LOAD_USAGE_TEXT = '''
-docker.db_data.load:
-    Restores DB data from a .dump file, given a valid DB name.
-
-Usage:
-    $ ./scripts/devenv.py load
-    $ python /scripts/devenv.py load
-'''
-
-
-def dump_file(db_name: str) -> str:
-    return os.path.join(PROJECT_HOME, f'{db_name}.dump')
+SUPPORTED_ARGS = {
+    'create': {
+        'tables': 'ddl-stmts.sql',
+    },
+    'load': {
+        'data': 'dml-stmts.sql',
+    },
+}
 
 
-@DBCONFIG.must_have_db_credentials
-def dump(arguments: Optional[List[str]]) -> int:
-
-    dump_command = f'''
-    PGPASSWORD="{DBCONFIG.PASSWORD}" \\
-    pg_dump \\
-        -U {DBCONFIG.USERNAME} \\
-        -h localhost \\
-        -p {DBCONFIG.PORT} \\
-        {DBCONFIG.NAME} \\
-        -f {dump_file(DBCONFIG.NAME)} \\
-        -Fc \\
-        -Z 9 \\
-        --no-owner \\
-        --no-privileges \\
-        --verbose
-    '''
-
-    print(f">>>>>>>>>> Dumping data from DB {DBCONFIG.NAME} <<<<<<<<<<")
-
-    if arguments:
-        dump_command += ' '.join(arguments)
-
-    return run_local(dump_command)
-
-
-@DBCONFIG.must_have_db_credentials
-def load(arguments: Optional[List[str]]) -> int:
-    db_name = DBCONFIG.NAME
-
-    load_command = f'''
-    PGPASSWORD={DBCONFIG.PASSWORD} \\
-    pg_restore \\
-        -Fc \\
-        -U {DBCONFIG.USERNAME} \\
-        -h {DBCONFIG.PGHOST} \\
-        -p {DBCONFIG.PORT} \\
-        --no-owner \\
-        --role={DBCONFIG.USERNAME} \\
-        -d {db_name} < {dump_file(db_name)} \\
-        --verbose
-    '''
-
-    print(f">>>>>>>>>> Loading data into DB {db_name} <<<<<<<<<<")
-
-    if arguments:
-        load_command += ' '.join(arguments)
-
-    return run_local(load_command)
-
-
-@DBCONFIG.must_have_db_credentials
-def createtables(arguments: Optional[List[str]] = None) -> int:
-    db_name = DBCONFIG.NAME
-
-    creation_cmd = f'''
+def _build_command(sql_file: str, arguments: Optional[List[str]] = None) -> Text:
+    command = f'''
     docker exec \\
         -it pgsqlserver-ctnr \\
         sh -c " \\
         PGPASSWORD={DBCONFIG.PASSWORD} \\
         psql \\
             -U {DBCONFIG.USERNAME} \\
-            -d {db_name} \\
-            -f /ddl-stmts.sql \\
+            -d {DBCONFIG.NAME} \\
+            -f {sql_file} \\
         "
     '''
 
-    print(f">>>>>>>>>> Creating tables in DB {db_name} <<<<<<<<<<")
-
     if arguments:
-        creation_cmd += ' '.join(arguments)
+        command += ' '.join(arguments[2:])
 
-    return run_local(creation_cmd)
+    return command
 
 
-def dropdb(arguments: Optional[List[str]] = None) -> int:
-    db_name = DBCONFIG.NAME
+@DBCONFIG.must_have_db_credentials
+def db_action(arguments: List[str]) -> int:
+    try:
+        action = arguments[0]
+        resource = arguments[1]
+    except IndexError:
+        usage(DB_USAGE_TEXT)
+        return -1
 
-    creation_cmd = f'''
-    docker exec \\
-        -it pgsqlserver-ctnr \\
-        sh -c " \\
-        dropdb \\
-            {DBCONFIG.NAME} \\
-            --if-exists \\
-        "
-    '''
+    print(f'>>>>>>>>> Running {action} {resource} <<<<<<<<<<')
 
-    print(f">>>>>>>>>> Dropping DB {db_name} <<<<<<<<<<")
+    resources = SUPPORTED_ARGS.get(action, {})
+    sql_file = resources.get(resource, '')
 
-    if arguments:
-        creation_cmd += ' '.join(arguments)
+    if sql_file != '':
+        command = _build_command(sql_file, arguments)
+        return run_local(command)
 
-    return run_local(creation_cmd)
+    usage(DB_USAGE_TEXT)
+    return -1

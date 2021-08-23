@@ -7,8 +7,9 @@ from typing import Optional, List
 # Project imports
 from docker.build import build
 from docker.clean import clean
+from docker.code import analyze
+from docker.db import db_action
 from docker.dev import dev
-from docker.db import createtables, dropdb, dump, load
 from docker.kill import kill
 from docker.logs import logs
 from docker.restart import restart
@@ -23,11 +24,9 @@ def argument_to_command(arguments: Optional[List[str]]) -> None:
     commands = {
         "build": build,
         "clean": clean,
-        "createtables": createtables,
+        "code": analyze,
+        "db": db_action,
         "dev": dev,
-        "dump": dump,
-        "dropdb": dropdb,
-        "load": load,
         "kill": kill,
         "logs": logs,
         "restart": restart,

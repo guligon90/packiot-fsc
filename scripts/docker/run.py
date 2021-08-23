@@ -12,8 +12,6 @@ def run_with_compose(
     inside_container: Optional[bool] = False
 ) -> int:
     """Runs a command, using the project's Docker Compose .yaml file."""
-    print(">>>>>>>>>> Running Command <<<<<<<<<<")
-
     if inside_container:
         compose_arguments = 'run --rm' if deps else 'run --rm --no-deps'
         command = f"{common.COMPOSE_COMMAND} {compose_arguments} {' '.join(arguments)}"
