@@ -26,7 +26,7 @@ In order to build the project, you must have already installed and configured in
 * [Docker Compose](https://docs.docker.com/compose/install/)
 * [Python (3.8)](https://www.python.org/downloads/release/python-3810/)
 * [pip](https://pip.pypa.io/en/stable/installation/)
-* [virtalenv](https://virtualenv.pypa.io/en/latest/) (or any other suitable virtual environment manager for Python)
+* [virtualenv](https://virtualenv.pypa.io/en/latest/) (or any other suitable virtual environment manager for Python)
 
 ### 1.1. Installing pip and virtualenv
 

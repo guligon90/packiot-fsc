@@ -6,7 +6,7 @@
 - [1. Introduction](#1-introduction)
 - [2. Getting started](#2-getting-started)
 - [3. Code linting](#3-code-linting)
-- [3. Where to now?](#4-where-to-now)
+- [4. Where to now?](#4-where-to-now)
     
 <!-- /TOC -->
 

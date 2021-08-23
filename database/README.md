@@ -40,7 +40,7 @@ Before going straight to the implementation aspects, is presented below an alter
 
 Note that the types of each attribute are in accordance with the SQL type system that the PostgreSQL v11 supports.
 
-Concerning implmentation, some SQL scripts were implemented in order build the database structure:
+Concerning implementation, some SQL scripts were implemented in order build the database structure:
 
 * [ddl-stmts](./postgresql/scripts/sql/ddl-stmts.sql): This file contains the data definition (DDL) statements, i.e., the SQL statements responsible for creating the tables and its relations;
 * [dml-stmts](./postgresql/scripts/sql/dml-stmts.sql): Regarding data manipulation (DML) statements, this file contains the implementation of functions that dymamically load data into the tables.
