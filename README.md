@@ -69,7 +69,7 @@ $ ./scripts/devenv.py build pgsqlserver
 $ ./scripts/devenv.py startwlogs pgsqlserver # Starts the container in detached mode and shows the logs
 ```
 
-**Note**: The database for this challenge (`packiotfscdb`) is created when the container is started (you can see in the logs). To run the DDL statements and the queries implemented for this challenge, see [this documentation](./database/README.md).
+**Note**: The database for this challenge (`packiotfscdb`) is created when the container is started (you can see in the logs). More information on how to interact with it can be found [here](./database/README.md#1-introduction).
 
 ### 2.2. pgAdmin 4
 
@@ -77,6 +77,12 @@ Similarly, we use the automation script to build and run this service, with the 
 ```bash
 $ ./scripts/devenv.py startwlogs pgadmin
 ```
+
+With the container up and running, you can now access the pgAdmin's UI via [browser](http://localhost:15432). The credentials for signing in are defined in the container's [.env file](./database/pgadmin/docker/.pgadmin.env).
+
+To access the database and its respective schema, you'll have to add a server and set up the connection to it. To do that, you can check out the official pgAdmin 4 [documentation](https://www.pgadmin.org/docs/pgadmin4/latest/connecting.html). It's pretty straightforward. The necessary database credentials are defined in the `pgsqlserver` container's [.env file](./database/postgresql/docker/.pgsql.env).
+
+**Note**: When specifying the hostname in the connection dialog, you must enter the name of the service listed in the Docker Compose YAML file, i.e., (`pgsqlserver`).
 
 ## 3. Where to now?
 

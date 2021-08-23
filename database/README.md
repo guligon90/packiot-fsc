@@ -6,6 +6,11 @@
 - [1. Introduction](#1-introduction)
 - [2. Modelling](#2-modelling)
 - [3. Implementation](#3-implementation)
+    - [3.1. Creating tables](#31-creating-tables)
+    - [3.2. Loading data](#32-loading-data)
+    - [3.3. Code linting](#33-code-linting)
+        - [3.3.1. Linting](#331-linting)
+        - [3.3.1. Fixing](#332-fixing)
 - [4. Possible improvements](#4-possible-improvements)
 - [5. Where to now?](#5-where-to-now)
     
@@ -35,8 +40,53 @@ Before going straight to the implementation aspects, is presented below an alter
 
 Note that the types of each attribute are in accordance with the SQL type system that the PostgreSQL v11 supports.
 
+Concerning implmentation, some SQL scripts were implemented in order build the database structure:
+
+* [ddl-stmts](./postgresql/scripts/sql/ddl-stmts.sql): This file contains the data definition (DDL) statements, i.e., the SQL statements responsible for creating the tables and its relations;
+* [dml-stmts](./postgresql/scripts/sql/dml-stmts.sql): Regarding data manipulation (DML) statements, this file contains the implementation of functions that dymamically load data into the tables.
+
+Similar to the building process described at the root documentation, the creation of tables and loading of test data can be performed by the `devenv.py` script:
+
+### 3.1. Creating tables
+Just run on the terminal:
+```bash
+$ ./scripts/devenv.py db create tables
+```
+
+### 3.2. Loading data
+```bash
+$ ./scripts/devenv.py db load data
+```
+
+Having run both scripts, you can now check the newly created structure via pgAdmin 4. More information [here](../README.md#22-pgadmin-4).
+
+### 3.3. Code linting
+
+In order to maintain a reasonable level of quality in code production, a SQL linting tool was integrated to the project ([SQLFluff](https://docs.sqlfluff.com/en/stable/)). It can be executed via the automation script.
+
+#### 3.3.1. Linting
+To just lint the code, and receive a report with possible inconsistencies, just run:
+```bash
+$ ./scripts/devenv.py code sql lint
+```
+#### 3.3.2. Fixing
+To rectify possible format problems in the scripts, just run in the terminal:
+```bash
+$ ./scripts/devenv.py code sql fix
+```
+
 ## 4. Possible improvements
 
+* Concerning the storage of values for each counter, I believe that indexing the rows with a `timestamptz` could be problematic in the following scenario: Suppose that two count values are generated, each one for different counters, **at the same time** (with the same timestamp). Thus, when these records are stored in the database, an **index collision** will occur, generating a constraint error.
+    * One possible solution for this is to index these records with some sort of [time-based UUID](https://www.postgresql.org/docs/current/uuid-ossp.html).
+    * A composite primary key can also solve this problem, i.e., adding a `SERIAL` typed field (`id`) and redefining the primary key definition:
+    ```sql
+    CREATE TABLE values (
+        ...
+        id SERIAL,
+        PRIMARY KEY (timestamp_value, id)
+    );
+    ```
 ## 5. Where to now?
 
 * [Root](../README.md)

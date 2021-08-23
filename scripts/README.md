@@ -5,7 +5,8 @@
 
 - [1. Introduction](#1-introduction)
 - [2. Getting started](#2-getting-started)
-- [3. Where to now?](#3-where-to-now)
+- [3. Code linting](#3-code-linting)
+- [3. Where to now?](#4-where-to-now)
     
 <!-- /TOC -->
 
@@ -36,7 +37,16 @@ Finally, to check out the documentation of each script, you can run:
 $ ./scripts/devenv.py usage
 ```
 
-## 3. Where to now?
+## 3. Code linting
+
+In order to maintain a reasonable level of quality in code production, a Python linting tool was integrated to the project ([Prospector](http://prospector.landscape.io/en/master/)). It can be executed via the automation script.
+
+To just lint the code, and receive a report with possible inconsistencies, just run:
+```bash
+$ ./scripts/devenv.py code python lint
+```
+
+## 4. Where to now?
 
 * [Database](../database/README.md) 
 * [Root](../README.md)
