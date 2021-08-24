@@ -17,13 +17,14 @@ Usage:
 
 Where:
     action: create | load
-    resource: tables | data
+    resource: data | queries | tables
 '''
 
 
 SUPPORTED_ARGS = {
     'create': {
         'tables': 'ddl-stmts.sql',
+        'queries': 'queries.sql',
     },
     'load': {
         'data': 'dml-stmts.sql',
