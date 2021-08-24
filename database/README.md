@@ -8,9 +8,10 @@
 - [3. Implementation](#3-implementation)
     - [3.1. Creating tables](#31-creating-tables)
     - [3.2. Loading data](#32-loading-data)
-    - [3.3. Code linting](#33-code-linting)
-        - [3.3.1. Linting](#331-linting)
-        - [3.3.1. Fixing](#332-fixing)
+    - [3.3. Production reports](#33-production-reports)
+    - [3.4. Code linting](#34-code-linting)
+        - [3.4.1. Linting](#341-linting)
+        - [3.4.2. Fixing](#342-fixing)
 - [4. Possible improvements](#4-possible-improvements)
 - [5. Where to now?](#5-where-to-now)
     
@@ -54,22 +55,29 @@ $ ./scripts/devenv.py db create tables
 ```
 
 ### 3.2. Loading data
+In order to test the production report query, you must generate some dummy data. For that, just run in the terminal:
 ```bash
 $ ./scripts/devenv.py db load data
 ```
 
-Having run both scripts, you can now check the newly created structure via pgAdmin 4. More information [here](../README.md#22-pgadmin-4).
+### 3.3. Production reports
+One of the required features in this project is to implement a query that evaluates the **total production** of parts, per **date**, **machine** and **shift**. The SQL abtraction for this query was implemented in the function `total_production()`, and the source code can be checked out [here](./postgresql/scripts/sql/queries.sql). To create this function in the database, you must run the command:
+```bash
+$ ./scripts/devenv.py db create queries
+```
 
-### 3.3. Code linting
+Having run all scripts, you can now check the newly created structure and test the queries via pgAdmin 4. More information [here](../README.md#22-pgadmin-4).
+
+### 3.4. Code linting
 
 In order to maintain a reasonable level of quality in code production, a SQL linting tool was integrated to the project ([SQLFluff](https://docs.sqlfluff.com/en/stable/)). It can be executed via the automation script.
 
-#### 3.3.1. Linting
+#### 3.4.1. Linting
 To just lint the code, and receive a report with possible inconsistencies, just run:
 ```bash
 $ ./scripts/devenv.py code sql lint
 ```
-#### 3.3.2. Fixing
+#### 3.4.2. Fixing
 To rectify possible format problems in the scripts, just run in the terminal:
 ```bash
 $ ./scripts/devenv.py code sql fix

@@ -1,4 +1,4 @@
-# PackIOT FSC :: Challenge #1 [WiP]
+# PackIOT FSC :: Challenge #1
 
 Technical assessment for the position of full-stack software developer at PackIOT.
 
