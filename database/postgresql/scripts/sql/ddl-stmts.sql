@@ -13,15 +13,15 @@ DROP TABLE IF EXISTS "machines";
 DROP TABLE IF EXISTS "counters";
 
 CREATE TABLE IF NOT EXISTS "counters" (
-    "id" SERIAL PRIMARY KEY,
-    "code" varchar(50) UNIQUE NOT NULL
+	"id" SERIAL PRIMARY KEY,
+	"code" varchar(50) UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "machines" (
-    "id" SERIAL PRIMARY KEY,
-    "code" varchar(50) UNIQUE NOT NULL,
-    --Must be unique, for the FK with counters be one-to-one
-    "counter_id" int UNIQUE NOT NULL
+	"id" SERIAL PRIMARY KEY,
+	"code" varchar(50) UNIQUE NOT NULL,
+	--Must be unique, for the FK with counters be one-to-one
+	"counter_id" int UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS "values" (
@@ -31,11 +31,11 @@ CREATE TABLE IF NOT EXISTS "values" (
 );
 
 CREATE TABLE IF NOT EXISTS "shifts" (
-    "id" SERIAL PRIMARY KEY,
-    "code" varchar(50) UNIQUE NOT NULL,
-    "machine_id" int NOT NULL,
-    "hour_start" time,
-    "hour_end" time
+	"id" SERIAL PRIMARY KEY,
+	"code" varchar(50) UNIQUE NOT NULL,
+	"machine_id" int NOT NULL,
+	"hour_start" time,
+	"hour_end" time
 );
 
 ALTER TABLE IF EXISTS "machines"

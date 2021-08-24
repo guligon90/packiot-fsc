@@ -12,9 +12,9 @@ alter sequence counters_id_seq restart with 1;
 -- Create type for dummy shift creation
 DROP TYPE IF EXISTS shift;
 CREATE TYPE shift AS (
-    code varchar,
-    start_hour time,
-    end_hour time
+	code varchar,
+	start_hour time,
+	end_hour time
 );
 
 CREATE OR REPLACE FUNCTION create_counter_and_machine(machine_code varchar(50))
