@@ -45,6 +45,7 @@ Concerning implementation, some SQL scripts were implemented in order build the 
 
 * [ddl-stmts](./postgresql/scripts/sql/ddl-stmts.sql): This file contains the data definition (DDL) statements, i.e., the SQL statements responsible for creating the tables and its relations;
 * [dml-stmts](./postgresql/scripts/sql/dml-stmts.sql): Regarding data manipulation (DML) statements, this file contains the implementation of functions that dymamically load data into the tables.
+* [queries](./postgresql/scripts/sql/queries.sql): One of the required features in this project is to implement a query that evaluates the **total production** of parts, per **date**, **machine** and **shift**. The SQL abtraction for this query was implemented in the function `total_production()`.
 
 Similar to the building process described at the root documentation, the creation of tables and loading of test data can be performed by the `devenv.py` script:
 
@@ -61,7 +62,7 @@ $ ./scripts/devenv.py db load data
 ```
 
 ### 3.3. Production reports
-One of the required features in this project is to implement a query that evaluates the **total production** of parts, per **date**, **machine** and **shift**. The SQL abtraction for this query was implemented in the function `total_production()`, and the source code can be checked out [here](./postgresql/scripts/sql/queries.sql). To create this function in the database, you must run the command:
+Just run on the terminal:
 ```bash
 $ ./scripts/devenv.py db create queries
 ```
