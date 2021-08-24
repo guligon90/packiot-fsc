@@ -1,6 +1,6 @@
 # PackIOT FSC :: Challenge #1
 
-Technical assessment for the position of full-stack software developer at PackIOT.
+Technical assessment for the position of full-stack software developer at [PackIOT](https://packiot.com/).
 
 
 <!-- TOC -->
