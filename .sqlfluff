@@ -1,4 +1,4 @@
-# Adaptede from: http://www.legendu.net/misc/blog/tips-on-sqlfluff/#Customized-Fix-Rules-for-sqlfluff
+# Adapted from: http://www.legendu.net/misc/blog/tips-on-sqlfluff/#Customized-Fix-Rules-for-sqlfluff
 
 [sqlfluff]
 verbose = 0
